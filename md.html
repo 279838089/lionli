@@ -19,7 +19,8 @@
         }
 
         .container {
-            max-width: 100%;
+            max-width: 680px;
+            width: 100%;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -558,7 +559,7 @@
             const htmlContent = marked.parse(markdownText);
             
             // 创建带样式的HTML内容
-            const styledHtml = `<div class="theme-${currentTheme}" style="font-family: -apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif; line-height: 1.8; color: #333;">${htmlContent}</div>`;
+            const styledHtml = `<div class="theme-${currentTheme}" style="font-family: -apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif; line-height: 1.8; color: #333; background:#ffffff;">${htmlContent}</div>`;
             
             copyContent.innerHTML = styledHtml;
             
