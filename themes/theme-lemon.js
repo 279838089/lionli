@@ -1,7 +1,7 @@
 (function(){
   const css = `
-.theme-lemon h1 { font-size: 20px; font-weight: bold; color: #e0a800; margin: 16px 0 12px 0; padding: 10px 15px; background: linear-gradient(90deg, #fff9c4, #ffe082); border-radius: 8px; }
-.theme-lemon h2 { font-size: 18px; font-weight: bold; color: #d97706; margin: 14px 0 10px 0; padding: 8px 12px; background: #fffbea; border-left: 4px solid #fcd34d; }
+.theme-lemon h1 { font-size: 20px; font-weight: bold; color: #e0a800; margin: 16px 0 12px 0; }
+.theme-lemon h2 { font-size: 18px; font-weight: bold; color: #d97706; margin: 14px 0 10px 0; }
 .theme-lemon h3 { font-size: 16px; font-weight: bold; color: #f59e0b; margin: 12px 0 8px 0; }
 .theme-lemon h4 { font-size: 15px; font-weight: bold; color: #d97706; margin: 12px 0 8px 0; }
 .theme-lemon h5 { font-size: 14px; font-weight: bold; color: #ca8a04; margin: 12px 0 8px 0; }
