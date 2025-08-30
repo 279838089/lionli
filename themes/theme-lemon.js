@@ -1,16 +1,20 @@
 (function(){
   const css = `
-.theme-lemon h1 { font-size: 20px; font-weight: bold; color: #e0a800; margin: 16px 0 12px 0; }
-.theme-lemon h2 { font-size: 18px; font-weight: bold; color: #d97706; margin: 14px 0 10px 0; }
-.theme-lemon h3 { font-size: 16px; font-weight: bold; color: #f59e0b; margin: 12px 0 8px 0; }
-.theme-lemon h4 { font-size: 15px; font-weight: bold; color: #d97706; margin: 12px 0 8px 0; }
-.theme-lemon h5 { font-size: 14px; font-weight: bold; color: #ca8a04; margin: 12px 0 8px 0; }
-.theme-lemon h6 { font-size: 13px; font-weight: bold; color: #a16207; margin: 12px 0 8px 0; }
-.theme-lemon p { margin: 10px 0; text-align: justify; font-size: 15px; line-height: 1.8; color: #333; }
-.theme-lemon blockquote { margin: 12px 0; padding: 12px 15px; color: #b45309; font-size: 14px; line-height: 1.8; background: linear-gradient(135deg, #fff9c4, #fffbea); border-radius: 8px; border-left: 4px solid #fcd34d; }
-.theme-lemon hr { height: 2px; border: none; background: linear-gradient(to right, rgba(248,57,41,0), #f4b400, rgba(248,57,41,0)); }
-.theme-lemon strong { color: #e0a800; font-weight: bold; }
-.theme-lemon em { color: #d97706; }
+.theme-lemon { color: #1f2937; }
+.theme-lemon h1 { font-size: 22px; font-weight: 700; color: #ca8a04; margin: 18px 0 12px; }
+.theme-lemon h2 { font-size: 20px; font-weight: 700; color: #713f12; margin: 16px 0 10px; padding-left: 10px; border-left: 4px solid #facc15; }
+.theme-lemon h3 { font-size: 18px; font-weight: 600; color: #854d0e; margin: 14px 0 8px; }
+.theme-lemon p { margin: 10px 0 12px; text-align: justify; font-size: 16px; line-height: 1.9; color: #374151; }
+.theme-lemon blockquote { margin: 12px 0; padding: 12px 14px; background: #fffbeb; color: #713f12; border-left: 4px solid #fde68a; border-radius: 6px; }
+.theme-lemon ul { margin: 10px 0; padding-left: 22px; list-style: circle; }
+.theme-lemon ol { margin: 10px 0; padding-left: 22px; }
+.theme-lemon li { margin: 6px 0; line-height: 1.9; }
+.theme-lemon a { color: #b45309; text-decoration: none; }
+.theme-lemon a:hover { text-decoration: underline; }
+.theme-lemon hr { height: 1px; border: none; background: #fde68a; margin: 16px 0; }
+.theme-lemon code { background: #fffbeb; color: #713f12; padding: 2px 6px; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 85%; }
+.theme-lemon strong { color: #854d0e; font-weight: 700; }
+.theme-lemon em { color: #ca8a04; }
 `;
   const style = document.createElement('style');
   style.textContent = css;
