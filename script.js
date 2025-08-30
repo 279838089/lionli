@@ -9,6 +9,15 @@ const themeSelect = document.getElementById('themeSelect');
 
 let isPreviewMode = false;
 let currentTheme = 'default';
+const THEME_ACCENTS = {
+  default: '#0a84ff',
+  apple: '#0a84ff',
+  tech: '#2563eb',
+  elegant: '#b8860b',
+  fresh: '#10b981',
+  warm: '#ea580c',
+  lemon: '#ca8a04',
+};
 
 // 历史与光标位置
 let history = [];
@@ -65,6 +74,10 @@ function toggleMode() {
 function changeTheme(theme) {
   currentTheme = theme;
   previewContent.className = `preview-content theme-${theme} ${isPreviewMode ? 'show' : ''}`;
+  try {
+    const color = THEME_ACCENTS[theme] || '#0a84ff';
+    document.documentElement.style.setProperty('--accent', color);
+  } catch (e) {}
   if (isPreviewMode) renderPreview();
 }
 
@@ -146,7 +159,11 @@ editor.addEventListener('keydown', (e) => {
 
 // 初始化渲染与历史首帧
 if (typeof marked !== 'undefined') renderPreview();
-setTimeout(() => saveHistory(), 0);
+setTimeout(() => {
+  saveHistory();
+  // 初始化强调色
+  try { document.documentElement.style.setProperty('--accent', THEME_ACCENTS[currentTheme] || '#0a84ff'); } catch(e) {}
+}, 0);
 
 // 回到顶部
 const backToTopBtn = document.getElementById('backToTop');
@@ -233,4 +250,3 @@ function undoEdit() {
     if (isPreviewMode) renderPreview();
   }
 }
-
