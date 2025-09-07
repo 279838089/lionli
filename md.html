@@ -31,8 +31,6 @@
     </div>
 
     <div class="toolbar">
-      <button class="btn btn-primary" onclick="insertText('**粗体**')">粗体</button>
-      <button class="btn btn-primary" onclick="insertText('\n> 引用\n')">引用</button>
       <button class="btn btn-secondary" onclick="undoEdit()">↩️ 撤销</button>
       <button class="btn btn-success" onclick="copyToClipboard()">📋 复制格式</button>
       <button class="btn btn-info" onclick="toggleMode()" id="toggleBtn">👀 预览效果</button>
@@ -43,11 +41,13 @@
       <div class="mode-indicator" id="modeIndicator">预览模式</div>
 
       <div class="quick-insert" id="quickInsert">
-        <button class="quick-btn" onclick="insertText('# ')">H1</button>
-        <button class="quick-btn" onclick="insertText('## ')">H2</button>
-        <button class="quick-btn" onclick="insertText('### ')">H3</button>
-        <button class="quick-btn" onclick="insertText('\n- ')">列表</button>
-        <button class="quick-btn" onclick="insertText('\n1. ')">数字</button>
+        <button class="quick-btn" onclick="applyHeading(1)">H1</button>
+        <button class="quick-btn" onclick="applyHeading(2)">H2</button>
+        <button class="quick-btn" onclick="applyHeading(3)">H3</button>
+        <button class="quick-btn" onclick="applyInline('**','**','粗体')">粗体</button>
+        <button class="quick-btn" onclick="prefixSelection('> ')">引用</button>
+        <button class="quick-btn" onclick="prefixSelection('- ')">列表</button>
+        <button class="quick-btn" onclick="prefixSelection('1. ')">数字</button>
         <button class="quick-btn" onclick="insertText('---')">分割线</button>
       </div>
 

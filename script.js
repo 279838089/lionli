@@ -46,7 +46,13 @@ function renderPreview() {
 }
 
 // 切换编辑/预览
-function toggleMode() {
+function toggleMode(options = {}) {
+  const suppressFocus = !!options.suppressFocus;
+  const pageX = window.scrollX;
+  const pageY = window.scrollY || window.pageYOffset;
+  const prevEditorScroll = editor.scrollTop;
+  const prevPreviewScroll = previewContent.scrollTop;
+
   isPreviewMode = !isPreviewMode;
   if (isPreviewMode) {
     savedCursorPos = editor.selectionStart;
@@ -63,9 +69,14 @@ function toggleMode() {
     modeIndicator.classList.remove('show');
     toggleBtn.textContent = '👀 预览效果';
     setTimeout(() => {
-      editor.focus();
-      editor.setSelectionRange(savedCursorPos, savedCursorPos);
+      if (!suppressFocus) {
+        try { editor.focus(); } catch(e) {}
+      }
+      try { editor.setSelectionRange(savedCursorPos, savedCursorPos); } catch(e) {}
       editor.scrollTop = savedScrollPos;
+      // 恢复先前页面与容器滚动位置
+      previewContent.scrollTop = prevPreviewScroll;
+      try { window.scrollTo(pageX, pageY); } catch(e) {}
     }, 10);
   }
 }
@@ -81,19 +92,104 @@ function changeTheme(theme) {
   if (isPreviewMode) renderPreview();
 }
 
-// 插入文本
+// 统一的滚动位置保护
+function withPreservedScroll(fn) {
+  const pageX = window.scrollX;
+  const pageY = window.scrollY || window.pageYOffset;
+  const edScroll = editor.scrollTop;
+  const pvScroll = previewContent.scrollTop;
+  const result = fn();
+  // 恢复滚动
+  editor.scrollTop = edScroll;
+  previewContent.scrollTop = pvScroll;
+  try { window.scrollTo(pageX, pageY); } catch(e) {}
+  return result;
+}
+
+// 插入文本（原始）
 function insertText(text) {
-  if (isPreviewMode) toggleMode();
-  const start = editor.selectionStart;
-  const end = editor.selectionEnd;
-  const value = editor.value;
-  const before = value.substring(0, start);
-  const after = value.substring(end);
-  editor.value = before + text + after;
-  const newCursorPos = start + text.length;
-  editor.focus();
-  editor.setSelectionRange(newCursorPos, newCursorPos);
-  saveHistory();
+  return withPreservedScroll(() => {
+    if (isPreviewMode) toggleMode({ suppressFocus: true });
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const value = editor.value;
+    const before = value.substring(0, start);
+    const after = value.substring(end);
+    editor.value = before + text + after;
+    const newCursorPos = start + text.length;
+    try { editor.setSelectionRange(newCursorPos, newCursorPos); } catch(e) {}
+    saveHistory();
+  });
+}
+
+// 行前缀：对选中文本的每一行添加前缀；若未选中则对当前行添加
+function prefixSelection(prefix) {
+  return withPreservedScroll(() => {
+    if (isPreviewMode) toggleMode({ suppressFocus: true });
+    const value = editor.value;
+    let selStart = editor.selectionStart;
+    let selEnd = editor.selectionEnd;
+
+    // 扩展到整行
+    const lineStart = value.lastIndexOf('\n', selStart - 1) + 1;
+    let lineEnd = value.indexOf('\n', selEnd);
+    if (lineEnd === -1) lineEnd = value.length;
+
+    const before = value.slice(0, lineStart);
+    const target = value.slice(lineStart, lineEnd);
+    const after = value.slice(lineEnd);
+
+    const lines = target.split('\n');
+    const prefixed = lines.map(l => prefix + l).join('\n');
+
+    const newValue = before + prefixed + after;
+    editor.value = newValue;
+
+    // 调整选择范围，尽量覆盖原有区域（含新增前缀）
+    const addedPerLine = prefix.length;
+    const lineCount = lines.length;
+    const newSelStart = selStart + addedPerLine;
+    const newSelEnd = selEnd + (addedPerLine * lineCount);
+    try { editor.setSelectionRange(newSelStart, newSelEnd); } catch(e) {}
+    saveHistory();
+  });
+}
+
+// 内联包裹：对选中文本用 before/after 包裹；若未选中则插入占位
+function applyInline(beforeMark, afterMark, placeholder = '') {
+  return withPreservedScroll(() => {
+    if (isPreviewMode) toggleMode({ suppressFocus: true });
+    const value = editor.value;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const hasSelection = start !== end;
+    const before = value.slice(0, start);
+    const selected = value.slice(start, end);
+    const after = value.slice(end);
+
+    if (hasSelection) {
+      const wrapped = beforeMark + selected + afterMark;
+      editor.value = before + wrapped + after;
+      // 选中被包裹内容（不含标记）
+      const newStart = start + beforeMark.length;
+      const newEnd = newStart + selected.length;
+      try { editor.setSelectionRange(newStart, newEnd); } catch(e) {}
+    } else {
+      const content = beforeMark + (placeholder || '') + afterMark;
+      editor.value = before + content + after;
+      // 光标置于两标记之间
+      const caretPos = start + beforeMark.length;
+      const caretEnd = caretPos + (placeholder || '').length;
+      try { editor.setSelectionRange(caretPos, caretEnd); } catch(e) {}
+    }
+    saveHistory();
+  });
+}
+
+// 标题应用：对选中每行添加 # 前缀
+function applyHeading(level) {
+  const hashes = '#'.repeat(Math.max(1, Math.min(6, level))) + ' ';
+  return prefixSelection(hashes);
 }
 
 // 复制为带样式 HTML
@@ -145,11 +241,11 @@ editor.addEventListener('input', () => {
 editor.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
     e.preventDefault();
-    insertText('**粗体**');
+    applyInline('**','**','粗体');
   }
   if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
     e.preventDefault();
-    insertText('*斜体*');
+    applyInline('*','*','斜体');
   }
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
     e.preventDefault();
