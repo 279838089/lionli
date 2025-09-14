@@ -28,6 +28,18 @@ const HISTORY_LIMIT = 100;
 let savedCursorPos = 0;
 let savedScrollPos = 0;
 
+// 计算字数（排除标点和空白）：仅统计字母与数字（含汉字）
+function countTextChars(text) {
+  try {
+    const matches = text.match(/[\p{L}\p{N}]/gu);
+    return matches ? matches.length : 0;
+  } catch (e) {
+    // 若不支持 Unicode 属性，使用降级方案：移除空白与常见中英文标点符号
+    const stripped = (text || '').replace(/[\s\u2000-\u206F\u2E00-\u2E7F\u3000-\u303F\uFF00-\uFF65\uFE10-\uFE1F\uFE30-\uFE4F\uFE50-\uFE6F\u2010-\u201F\u2026\u2E3A\u2E3B!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
+    return stripped.length;
+  }
+}
+
 // 配置 marked 选项
 if (typeof marked !== 'undefined') {
   marked.setOptions({ breaks: true, gfm: true });
@@ -60,6 +72,8 @@ function toggleMode(options = {}) {
     editor.classList.add('hidden');
     quickInsert.style.display = 'none';
     modeIndicator.classList.add('show');
+    // 更新模式提示与字数
+    try { modeIndicator.textContent = `预览模式 · 字数：${countTextChars(editor.value)}`; } catch(e) { modeIndicator.textContent = '预览模式'; }
     toggleBtn.textContent = '✏️ 返回编辑';
     renderPreview();
   } else {
@@ -67,6 +81,8 @@ function toggleMode(options = {}) {
     previewContent.classList.remove('show');
     quickInsert.style.display = 'flex';
     modeIndicator.classList.remove('show');
+    // 恢复文案
+    try { modeIndicator.textContent = '预览模式'; } catch(e) {}
     toggleBtn.textContent = '👀 预览效果';
     setTimeout(() => {
       if (!suppressFocus) {
@@ -234,7 +250,11 @@ function clearEditor() {
 // 输入监听：历史记录 + 实时预览
 editor.addEventListener('input', () => {
   saveHistory();
-  if (isPreviewMode) renderPreview();
+  if (isPreviewMode) {
+    // 实时更新预览与字数
+    try { modeIndicator.textContent = `预览模式 · 字数：${countTextChars(editor.value)}`; } catch(e) {}
+    renderPreview();
+  }
 });
 
 // 快捷键：B/ I / Enter 预览
