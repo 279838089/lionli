@@ -17,6 +17,7 @@ const THEME_ACCENTS = {
   fresh: '#10b981',
   warm: '#ea580c',
   lemon: '#ca8a04',
+  minimalist: '#111111',
 };
 
 // 历史与光标位置
@@ -366,3 +367,4 @@ function undoEdit() {
     if (isPreviewMode) renderPreview();
   }
 }
+
